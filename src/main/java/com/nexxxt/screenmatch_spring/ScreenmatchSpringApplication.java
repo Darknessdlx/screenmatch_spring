@@ -1,6 +1,8 @@
 package com.nexxxt.screenmatch_spring;
 
+import com.nexxxt.screenmatch_spring.model.DatosSerie;
 import com.nexxxt.screenmatch_spring.service.ConsumoAPI;
+import com.nexxxt.screenmatch_spring.service.ConvierteDatos;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,5 +20,10 @@ public class ScreenmatchSpringApplication implements CommandLineRunner {
         var json = consumoApi.obtenerDatos("http://www.omdbapi.com/?t=game+of+thrones&apikey=d4d0bf92");
 
         System.out.println(json);
+
+        ConvierteDatos conversor = new ConvierteDatos();
+        var datos = conversor.obtenerDatos(json, DatosSerie.class);
+
+        System.out.println(datos);
     }
 }
