@@ -1,13 +1,17 @@
 package com.nexxxt.screenmatch_spring.main;
 
+import com.nexxxt.screenmatch_spring.model.DatosEpisodio;
 import com.nexxxt.screenmatch_spring.model.DatosSerie;
 import com.nexxxt.screenmatch_spring.model.DatosTemporadas;
+import com.nexxxt.screenmatch_spring.model.Episodio;
 import com.nexxxt.screenmatch_spring.service.ConsumoAPI;
 import com.nexxxt.screenmatch_spring.service.ConvierteDatos;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -37,6 +41,37 @@ public class Main {
             var datosTemporadas = conversor.obtenerDatos(json, DatosTemporadas.class);
             temporadas.add(datosTemporadas);
         }
-        temporadas.forEach(System.out::println);
+//        temporadas.forEach(System.out::println);
+
+
+        // Mostrar solo el titulo de los episodios para las temporadas
+//        for (int i = 0; i < datos.totalDeTemporadas(); i++) {
+//            List<DatosEpisodio> episodiosTemporada = temporadas.get(i).episodios();
+//            for (int j = 0; j < episodiosTemporada.size(); j++) {
+//                System.out.println(episodiosTemporada.get(j).titulo());
+//            }
+//        }
+
+        // Mejora usando funciones Lamdas
+//        temporadas.forEach( t -> t.episodios().forEach(e -> System.out.println(e.titulo())));
+
+
+        // Convertir todas las informaciones a una lista del tipo DatosEpisodio
+        List<DatosEpisodio> datosEpisodios = temporadas.stream()
+                .flatMap(t -> t.episodios().stream())
+                .collect(Collectors.toList());
+
+        datosEpisodios.stream()
+                .filter(e -> !e.evaluacion().equalsIgnoreCase("N/A"))
+                .sorted(Comparator.comparing(DatosEpisodio::evaluacion).reversed())
+                .limit(5)
+                .forEach(System.out::println);
+
+        List<Episodio> episodios = temporadas.stream()
+                .flatMap(t -> t.episodios().stream()
+                        .map(d -> new Episodio(t.numero(),d)))
+                .collect(Collectors.toList());
+
+        episodios.forEach(System.out::println);
     }
 }
