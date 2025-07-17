@@ -6,11 +6,11 @@ import com.nexxxt.screenmatch_spring.model.DatosTemporadas;
 import com.nexxxt.screenmatch_spring.model.Episodio;
 import com.nexxxt.screenmatch_spring.service.ConsumoAPI;
 import com.nexxxt.screenmatch_spring.service.ConvierteDatos;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -61,17 +61,52 @@ public class Main {
                 .flatMap(t -> t.episodios().stream())
                 .collect(Collectors.toList());
 
-        datosEpisodios.stream()
-                .filter(e -> !e.evaluacion().equalsIgnoreCase("N/A"))
-                .sorted(Comparator.comparing(DatosEpisodio::evaluacion).reversed())
-                .limit(5)
-                .forEach(System.out::println);
-
+//        datosEpisodios.stream()
+//                .filter(e -> !e.evaluacion().equalsIgnoreCase("N/A"))
+//                .sorted(Comparator.comparing(DatosEpisodio::evaluacion).reversed())
+//                .limit(5)
+//                .forEach(System.out::println);
+//
+         // Convirtiendo los datos a una lista de tipo Episodio
         List<Episodio> episodios = temporadas.stream()
                 .flatMap(t -> t.episodios().stream()
                         .map(d -> new Episodio(t.numero(),d)))
                 .collect(Collectors.toList());
+//
+//        episodios.forEach(System.out::println);
+//
+//        // Busqueda de episodios a partir de X anio
+//        System.out.println("Indica el anio a partir del cual deseas ver los episodios");
+//        var fecha = teclado.nextInt();
+//        teclado.nextLine();
 
-        episodios.forEach(System.out::println);
+//        LocalDate fechaBusqueda = LocalDate.of(fecha, 1,1);
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+//        episodios.stream()
+//                .filter(e -> e.getFechaDeLanzamiento() != null && e.getFechaDeLanzamiento().isAfter(fechaBusqueda))
+//                .forEach(e -> System.out.println(
+//                        "Temporada " + e.getTemporada() +
+//                        "episodio " + e.getTitulo() +
+//                        "Fecha de lanzamiento " + e.getFechaDeLanzamiento().format(dtf)
+//                ));
+
+        // Busca episodios por un pedazo del titulo
+//        System.out.println("Por favor escribe el nombre o porcion de nombre del episodio que desea ver");
+//        var nombreEpisodio = teclado.nextLine();
+//        Optional<Episodio> episodioBuscado = episodios.stream()
+//                .filter(e -> e.getTitulo().toUpperCase().contains(nombreEpisodio.toUpperCase()))
+//                .findFirst();
+//        if(episodioBuscado.isPresent()){
+//            System.out.println("Episodio encontrado");
+//            System.out.println("Los datos son" + episodioBuscado.get());
+//        } else {
+//            System.out.println("Episodio no encontrado");
+//        }
+
+        Map<Integer, Double> evaluacionesPorTemporada = episodios.stream()
+                .collect(Collectors.groupingBy(Episodio::getTemporada,
+                        Collectors.averagingDouble(Episodio::getEvaluacion)));
+        System.out.println(evaluacionesPorTemporada);
     }
 }
